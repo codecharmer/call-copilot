@@ -1,0 +1,38 @@
+# ─── Dependencies ────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ─── Build output ────────────────────────────────────────────────────────────
+dist/
+out/
+release/
+build/
+.turbo/
+*.tsbuildinfo
+coverage/
+
+# ─── Environment & secrets ───────────────────────────────────────────────────
+# Provider keys live in the OS credential store, never in files. The only
+# committed env contract is .env.example.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ─── Local data produced by spikes and the app ───────────────────────────────
+# Repository indexes contain copies of source code; audio samples are transient.
+*.sqlite
+*.sqlite-*
+*.db
+*.wav
+*.pcm
+models/
+spikes/**/samples/
+spikes/**/results/*.json
+
+# ─── OS / editor ─────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json

@@ -1,0 +1,50 @@
+{
+  "name": "call-copilot",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Codebase Call Copilot — a desktop app (Windows first, macOS second) that listens during a technical call, detects questions about a selected repository, and streams a short answer grounded in the actual code.",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=9.15.0"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "clean": "turbo run clean && node -e \"for (const p of ['node_modules','.turbo']) require('fs').rmSync(p,{recursive:true,force:true})\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,cjs,json,md,css,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "prettier": "3.6.2",
+    "turbo": "2.10.7",
+    "typescript": "5.9.3"
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 100,
+    "tabWidth": 2,
+    "overrides": [
+      {
+        "files": [
+          "*.md",
+          "*.yml",
+          "*.yaml"
+        ],
+        "options": {
+          "printWidth": 80,
+          "proseWrap": "preserve"
+        }
+      }
+    ],
+    "endOfLine": "lf"
+  }
+}

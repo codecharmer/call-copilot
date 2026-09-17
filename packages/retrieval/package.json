@@ -1,0 +1,13 @@
+{
+  "name": "@call-copilot/retrieval",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Retrieval and evidence validation: exact identifier/path search, BM25 (SQLite FTS5), semantic neighbors, merge/expand, evidence pack assembly, citation validation.",
+  "scripts": {
+    "typecheck": "echo \"no sources yet\""
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

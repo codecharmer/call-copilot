@@ -1,0 +1,19 @@
+# .callcopilotignore — per-repository exclusions for Codebase Call Copilot.
+# Same syntax as .gitignore. Applied on top of nested .gitignore rules and the
+# built-in defaults (dependency folders, bundles, binaries, caches, media,
+# private keys, credential files, .env variants). Excluded files are listed in
+# the app with the reason; they are never silently dropped.
+#
+# Copy this file to the root of a repository as `.callcopilotignore`.
+
+# Generated or vendored code you never want cited
+vendor/
+generated/
+*.min.js
+*.map
+
+# Large fixtures that add noise to retrieval
+fixtures/**/*.json
+
+# Include a dependency's source explicitly (negation) when questions need it
+# !node_modules/@acme/payments/src/

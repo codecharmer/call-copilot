@@ -1,0 +1,14 @@
+{
+  "name": "@call-copilot/contracts",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Shared TypeScript contracts: event envelope, event types, state machines, and adapter interfaces. Types only, no runtime code.",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "typescript": "5.9.3"
+  }
+}

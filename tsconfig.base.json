@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Call Copilot base",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "preserve",
+
+    "strict": true,
+    // Beyond `strict`. Each of these closes a class of bug that `strict` alone
+    // still allows, and all are cheap to satisfy when adopted from the start
+    // rather than retrofitted.
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+
+    // Unused code is a lint concern, not a compile error — failing a build
+    // mid-refactor because a variable is briefly unused is friction with no
+    // safety payoff.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "incremental": true,
+    "composite": false,
+
+    "noEmit": true
+  },
+  "exclude": ["node_modules", "dist", ".next", "coverage"]
+}

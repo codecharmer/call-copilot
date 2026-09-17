@@ -1,0 +1,10 @@
+{
+  "name": "@call-copilot/spike-index-packaging",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0 spike: index-packaging. Throwaway; see README.md.",
+  "scripts": {
+    "typecheck": "echo \"spike not started\""
+  }
+}

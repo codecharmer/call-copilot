@@ -1,0 +1,25 @@
+# Generated, vendored, or build output — formatting these is either pointless or
+# actively harmful (it would fight the tool that produces them).
+
+# Lockfiles
+pnpm-lock.yaml
+apps/backend/composer.lock
+
+# Generated code
+packages/shared/src/generated/
+apps/frontend/next-env.d.ts
+
+# Build output and caches
+**/dist/
+**/.next/
+**/.turbo/
+**/coverage/
+**/*.tsbuildinfo
+
+# PHP vendor tree and framework-managed dirs
+apps/backend/vendor/
+apps/backend/storage/
+apps/backend/bootstrap/cache/
+
+# Verbatim copy of the design document; never reformatted.
+docs/DESIGN.md

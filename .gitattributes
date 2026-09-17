@@ -1,0 +1,10 @@
+# Normalize line endings so a Windows clone and a macOS clone produce identical
+# files, hashes, and prettier results. Editors on Windows should respect
+# .editorconfig (end_of_line = lf).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+*.wav binary
+*.sqlite binary

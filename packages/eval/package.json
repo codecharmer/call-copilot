@@ -1,0 +1,13 @@
+{
+  "name": "@call-copilot/eval",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Evaluation corpus and harness: answerable/unanswerable question sets per repository, retrieval hit-rate, citation support, question-detection precision/recall, latency replay.",
+  "scripts": {
+    "typecheck": "echo \"no sources yet\""
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

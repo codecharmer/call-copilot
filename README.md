@@ -5,8 +5,9 @@ repository you selected, finds the relevant code in a local index, and shows a s
 answer before the conversation moves on. Think of a live interview copilot whose central skill
 is understanding _your_ codebase.
 
-**Status: Phase 0 — technical spikes.** Nothing runs yet. The design is complete and lives in
-[docs/DESIGN.md](docs/DESIGN.md).
+**Status: early Phase 1.** The repository ingestion core is built and tested (discovery, ignore
+rules, exclusions, secret redaction, chunking, identifier splitting, generation manifests). No
+UI, no audio, no providers yet. The design lives in [docs/DESIGN.md](docs/DESIGN.md).
 
 ## Platforms
 
@@ -21,6 +22,7 @@ cd call-copilot
 corepack enable
 pnpm install
 pnpm typecheck
+pnpm test
 ```
 
 Requires Node 22 (`.nvmrc` / `.node-version`; use nvm, fnm, or nvm-windows). `corepack enable`

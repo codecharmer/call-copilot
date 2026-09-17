@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Evaluation corpus and harness: answerable/unanswerable question sets per repository, retrieval hit-rate, citation support, question-detection precision/recall, latency replay.",
   "scripts": {
-    "typecheck": "echo \"no sources yet\""
+    "typecheck": "node -e \"\""
   },
   "devDependencies": {
     "typescript": "5.9.3"

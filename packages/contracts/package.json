@@ -10,5 +10,12 @@
   "devDependencies": {
     "@types/node": "22.20.0",
     "typescript": "5.9.3"
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
   }
 }

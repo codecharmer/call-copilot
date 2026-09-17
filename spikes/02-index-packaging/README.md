@@ -2,6 +2,12 @@
 
 Design refs: [DESIGN.md](../../docs/DESIGN.md) §6, §8, §11; [ADR 0004](../../docs/adr/0004-local-index-sqlite-fts5.md).
 
+## How this spike is built
+
+This spike owns **no indexing logic**. It imports `@call-copilot/indexer` and
+`@call-copilot/retrieval`, runs them over a reference corpus, and writes timings to
+`results/REPORT.md`. What it measures is exactly what ships.
+
 ## Goal
 
 Prove that the local indexing stack installs from a fresh clone on Windows and macOS with no

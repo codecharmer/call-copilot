@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Electron desktop shell: companion window, global shortcuts, permissions, lifecycle, session orchestrator in the main process, React/TypeScript renderer.",
   "scripts": {
-    "typecheck": "echo \"no sources yet\""
+    "typecheck": "node -e \"\""
   },
   "devDependencies": {
     "typescript": "5.9.3"

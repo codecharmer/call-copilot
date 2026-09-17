@@ -14,6 +14,15 @@ performance are the first uncertainties to resolve.
 | 4. Release hardening | Credential storage, recovery, packaging, code signing (Windows Authenticode, macOS notarization), usage reporting                                                                           | Installable build passes the supported meeting matrix (AC-11, AC-12)                                        | Not started |
 | 5. Expansion         | Additional providers, languages, cross-repository context, Linux                                                                                                                            | Each extension receives its own compatibility and quality evaluation                                        | Not started |
 
+## Why Phase 1 started before Phase 0 finished
+
+Spike 01 needs a Windows machine, which the project does not have yet. Rather than idle, the
+platform-neutral half of Phase 1 is being built first: the ingestion core has no native
+dependency and no UI, so it can be written and tested anywhere. Windows correctness is held by
+CI ([.github/workflows/ci.yml](../.github/workflows/ci.yml)), which runs the full verification on
+`windows-latest` and `macos-latest` on every push. Native dependencies land one commit at a time
+behind that gate, so a Windows break is always attributable to a single change.
+
 ## Phase 0 order
 
 1. **Spike 01 on Windows.** Electron `desktopCapturer` with WASAPI loopback plus microphone, as

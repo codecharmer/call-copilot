@@ -18,7 +18,7 @@ observed results; each report states hardware, models, corpus, network condition
 - [ ] **AC-10** The packaged application meets the latency and 60-minute call reliability targets on the supported meeting matrix.
 - [ ] **AC-11** Repository text containing hostile instructions cannot invoke commands, expose keys, or change application settings.
 - [ ] **AC-12** API keys and repository contents do not appear in default logs, exported diagnostics, or renderer persistence.
-- [ ] **AC-13** (added) A fresh `git clone` on Windows followed by `corepack enable && pnpm install && pnpm build` succeeds with no manual steps.
+- [ ] **AC-13** (added) A fresh `git clone` on Windows followed by `corepack enable && pnpm install && pnpm build` succeeds with no manual steps. A [CI workflow](../.github/workflows/ci.yml) exists to enforce this on `windows-latest`, but **it has not run yet** — the Windows leg is currently asserted, not observed. Verified on macOS only: a clean clone installs with `--frozen-lockfile` and passes typecheck, format and test. Tick this only after a green Windows run, and re-check after every new dependency.
 
 ## Retrieval and answer quality
 

@@ -4,8 +4,12 @@ Throwaway experiments that answer the two biggest unknowns before any product co
 ([docs/ROADMAP.md](../docs/ROADMAP.md)). Each spike has a checklist, a pass/fail gate, and writes
 a short report to `results/REPORT.md` (committed) with raw numbers in `results/*.json` (ignored).
 
-Order: **01 on Windows → 02 on Windows → both on the Intel Mac.** Nothing here is reused in the
-app without being rewritten against `@call-copilot/contracts`.
+Order: **01 on Windows → 02 on Windows → both on the Intel Mac.**
+
+Spike 01 is throwaway: it answers a platform question and its code is rewritten for the app.
+Spike 02 is **not** — it is a thin benchmark that imports the real `@call-copilot/indexer` and
+`@call-copilot/retrieval` and writes a report. Building the indexing stack twice would only let
+the measured thing drift from the shipped thing.
 
 | Spike                                              | Question it answers                                                                                                                 | Gate                                                                                              |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |

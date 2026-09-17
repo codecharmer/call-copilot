@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # AC-13: a fresh clone must install and build with no manual steps, on the
+  # first-priority platform (Windows) and on macOS. Windows is listed first so
+  # its result is the one read first in the checks list. Neither is allowed to
+  # fail-fast the other — a Windows-only break must still show the macOS result.
+  verify:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node first, then corepack, then Node again with the pnpm cache.
+      # Enabling corepack before setup-node writes shims into the runner's
+      # pre-installed Node, which the version installed afterwards does not
+      # see — and on the Windows runner that also tends to hit EPERM. Asking
+      # for `cache: pnpm` before pnpm exists fails for the same reason, so the
+      # cache is requested in a second setup-node call once pnpm resolves.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - name: Show toolchain
+        run: |
+          node --version
+          pnpm --version
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      # --frozen-lockfile is the actual clone-and-run gate: it fails if the
+      # lockfile does not fully describe this platform's dependency tree.
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test

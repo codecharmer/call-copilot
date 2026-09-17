@@ -5,9 +5,23 @@
   "type": "module",
   "description": "Index worker: repository discovery, ignore policy, secret filtering, tree-sitter parsing, chunking, local embeddings, incremental updates, atomic index generations.",
   "scripts": {
-    "typecheck": "echo \"no sources yet\""
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "typescript": "5.9.3"
-  }
+    "@types/node": "22.20.0",
+    "typescript": "5.9.3",
+    "vitest": "2.1.9"
+  },
+  "dependencies": {
+    "@call-copilot/contracts": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts"
 }

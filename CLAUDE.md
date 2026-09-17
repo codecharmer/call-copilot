@@ -16,8 +16,9 @@ React renderer). `packages/contracts` is the types-only vocabulary every process
 `packages/indexer` runs in a Node utility process (discovery, secret filter, tree-sitter chunks,
 local embeddings, atomic index generations). `packages/retrieval` builds the evidence pack from
 SQLite FTS5 + vectors. `packages/providers` wraps Deepgram / OpenAI (or Anthropic) behind the
-contracts. `packages/eval` holds the evaluation corpus and replay harness. `spikes/` are
-throwaway Phase 0 experiments, never imported by the app.
+contracts. `packages/eval` holds the evaluation corpus and replay harness. `spikes/01-audio-capture` is a
+throwaway platform experiment; `spikes/02-index-packaging` is a thin benchmark over the real
+indexer and retrieval packages.
 
 ## Hard rules
 
@@ -39,5 +40,12 @@ Strict TypeScript from `tsconfig.base.json`; do not loosen it per package.
 
 ## Status
 
-Phase 0 (spikes) — next step is [spikes/01-audio-capture](spikes/01-audio-capture/README.md) on
-Windows. See [docs/ROADMAP.md](docs/ROADMAP.md).
+Early **Phase 1**. The repository ingestion core is built and tested: discovery, ignore rules,
+default exclusions, secret redaction, line handling, chunking, identifier splitting, generation
+manifests. No UI, no audio, no providers yet.
+
+Phase 0's audio spike is blocked on getting a Windows machine, so the platform-neutral half of
+Phase 1 was built first. Windows correctness is held by
+[CI](.github/workflows/ci.yml) on `windows-latest`; native dependencies land one CI-gated commit
+at a time. Next: SQLite + FTS5, once the first Windows run is green.
+See [docs/ROADMAP.md](docs/ROADMAP.md).

@@ -20,7 +20,7 @@ Spike 01 needs a Windows machine, which the project does not have yet. Rather th
 platform-neutral half of Phase 1 is being built first: the ingestion core has no native
 dependency and no UI, so it can be written and tested anywhere. Windows correctness is held by
 CI ([.github/workflows/ci.yml](../.github/workflows/ci.yml)), which runs the full verification on
-`windows-latest` and `macos-latest` on every push. Native dependencies land one commit at a time
+`windows-latest` and `macos-latest` on every push and is **green as of the first run**. Native dependencies land one commit at a time
 behind that gate, so a Windows break is always attributable to a single change.
 
 ## Phase 0 order

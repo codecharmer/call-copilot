@@ -21,6 +21,19 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
+  apps/cli:
+    dependencies:
+      '@call-copilot/indexer':
+        specifier: workspace:*
+        version: link:../../packages/indexer
+    devDependencies:
+      '@types/node':
+        specifier: 22.20.0
+        version: 22.20.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+
   apps/desktop:
     devDependencies:
       typescript:

@@ -1,0 +1,23 @@
+{
+  "name": "@call-copilot/cli",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Diagnostic CLI over @call-copilot/indexer: run repository discovery, exclusions, secret redaction and chunking against a real folder and print what happened. Not a shipped product surface — a dev tool for exercising the ingestion core end to end, especially on Windows where the real filesystem behaves differently than a temp-directory test.",
+  "bin": {
+    "ccinspect": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/cli.js",
+    "test": "node -e \"\""
+  },
+  "dependencies": {
+    "@call-copilot/indexer": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "typescript": "5.9.3"
+  }
+}

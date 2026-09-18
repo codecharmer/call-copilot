@@ -23,6 +23,8 @@ corepack enable
 pnpm install
 pnpm typecheck
 pnpm test
+pnpm build
+node apps/cli/dist/cli.js .   # run the ingestion core against this repo itself
 ```
 
 Requires Node 22 (`.nvmrc` / `.node-version`; use nvm, fnm, or nvm-windows). `corepack enable`

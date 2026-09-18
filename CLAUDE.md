@@ -16,9 +16,11 @@ React renderer). `packages/contracts` is the types-only vocabulary every process
 `packages/indexer` runs in a Node utility process (discovery, secret filter, tree-sitter chunks,
 local embeddings, atomic index generations). `packages/retrieval` builds the evidence pack from
 SQLite FTS5 + vectors. `packages/providers` wraps Deepgram / OpenAI (or Anthropic) behind the
-contracts. `packages/eval` holds the evaluation corpus and replay harness. `spikes/01-audio-capture` is a
-throwaway platform experiment; `spikes/02-index-packaging` is a thin benchmark over the real
-indexer and retrieval packages.
+contracts. `packages/eval` holds the evaluation corpus and replay harness. `apps/cli` (`ccinspect`) is a
+diagnostic tool, not a product surface: it runs the indexer against a real folder and prints what
+happened, which is how the ingestion core gets exercised outside synthetic test fixtures.
+`spikes/01-audio-capture` is a throwaway platform experiment; `spikes/02-index-packaging` is a thin
+benchmark over the real indexer and retrieval packages.
 
 ## Hard rules
 
@@ -45,7 +47,9 @@ default exclusions, secret redaction, line handling, chunking, identifier splitt
 manifests. No UI, no audio, no providers yet.
 
 Phase 0's audio spike is blocked on getting a Windows machine, so the platform-neutral half of
-Phase 1 was built first. Windows correctness is held by
-[CI](.github/workflows/ci.yml) on `windows-latest`; native dependencies land one CI-gated commit
-at a time. Next: SQLite + FTS5, once the first Windows run is green.
+Phase 1 was built first. Windows correctness is held by [CI](.github/workflows/ci.yml) on
+`windows-latest`, **green as of the first run**; native dependencies land one CI-gated commit at a
+time. `apps/cli` (`ccinspect`) is built and runnable — see its
+[README](apps/cli/README.md) — as a way to smoke-test the indexer on a real Windows filesystem.
+Next: SQLite + FTS5.
 See [docs/ROADMAP.md](docs/ROADMAP.md).

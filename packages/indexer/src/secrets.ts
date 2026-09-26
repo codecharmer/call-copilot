@@ -76,6 +76,24 @@ const RULES: readonly SecretRule[] = [
 const PLACEHOLDER = '[redacted]';
 
 /**
+ * Values that are references or placeholders, not secrets.
+ *
+ * `--password="$DB_PASS"` in a shell script and `password: "{{ vault }}"` in a
+ * template both match the assignment shape, but redacting them hides the very
+ * thing a reader needs to see: where the value comes from. Redacting these is
+ * worse than noise; it makes the evidence wrong.
+ */
+function isReferenceOrPlaceholder(value: string): boolean {
+  if (/^(\$\{?|\{\{|%\w|<[^>]*>$|process\.env|env\(|getenv\()/i.test(value)) return true;
+  // Repeated single character: "xxxxxxxx", "********", "........".
+  if (/^(.)\1{7,}$/.test(value)) return true;
+  if (/^(your[_-]|changeme|change[_-]me|example|placeholder|replace[_-]me|todo\b)/i.test(value)) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Redact secrets while keeping the text's line structure identical.
  *
  * The placeholder contains no newline, and only the matched group is replaced,
@@ -98,6 +116,7 @@ export function redactSecrets(text: string): RedactionResult {
       if (secret === undefined || secret.length === 0) return match;
       // A match spanning a newline would break the line-count invariant.
       if (secret.includes('\n')) return match;
+      if (isReferenceOrPlaceholder(secret)) return match;
 
       findings.push({ line: lineAt(result, offset), rule: rule.name });
 

@@ -99,3 +99,30 @@ describe('redactSecrets', () => {
     expect(twice).toBe(once);
   });
 });
+
+describe('references and placeholders are not secrets', () => {
+  it('leaves a shell variable reference alone', () => {
+    // From a real WordPress test bootstrap: the value is a reference, and
+    // redacting it would hide where the password comes from.
+    const line = 'mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"';
+    expect(redactSecrets(line).text).toBe(line);
+  });
+
+  it('leaves template and env placeholders alone', () => {
+    for (const line of [
+      'password: "{{ vault_db_password }}"',
+      'api_key = "${API_KEY}"',
+      'secret: "%SECRET%"',
+      'token = "<your-token-here>"',
+      'password = "xxxxxxxxxxxx"',
+      'api_key = "changeme-later"',
+    ]) {
+      expect(redactSecrets(line).text, line).toBe(line);
+    }
+  });
+
+  it('still redacts a literal that merely starts with a letter', () => {
+    const { text } = redactSecrets('password = "hunter2hunter2"');
+    expect(text).not.toContain('hunter2hunter2');
+  });
+});

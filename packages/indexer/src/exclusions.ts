@@ -22,6 +22,7 @@ export type ExclusionCategory =
   | 'media'
   | 'secret-bearing'
   | 'vcs'
+  | 'tooling'
   | 'too-large'
   | 'not-text';
 
@@ -52,6 +53,9 @@ const EXCLUDED_DIRECTORIES = new Map<string, ExclusionReason>([
   ['coverage', { category: 'generated', message: 'Coverage report output.' }],
   ['.venv', { category: 'dependencies', message: 'Python virtual environment.' }],
   ['venv', { category: 'dependencies', message: 'Python virtual environment.' }],
+  ['.claude', { category: 'tooling', message: 'Agent tool metadata.' }],
+  ['.cursor', { category: 'tooling', message: 'Editor tool metadata.' }],
+  ['.idea', { category: 'tooling', message: 'Editor tool metadata.' }],
 ]);
 
 /** Extensions that are never useful as retrieval evidence. */
@@ -158,6 +162,29 @@ export function fileExclusion(relativePosix: string): ExclusionReason | undefine
  * if it were source. A NUL byte in the first 8 KiB is the same heuristic git
  * uses, and it is cheap.
  */
+/** A line longer than this is not something a person wrote by hand. */
+export const MINIFIED_LINE_LENGTH = 2000;
+
+/**
+ * Detect minified or generated text that slipped past the name-based checks.
+ *
+ * §6 excludes "generated bundles" by default. `*.min.js` is caught by name, but
+ * plenty of bundled code is not named that way (`ace/mode-javascript.js` in a
+ * WordPress plugin, for example). Such files are useless as evidence, produce
+ * one enormous chunk, and are where the secret filter finds its false
+ * positives: syntax-highlighter keyword lists contain `password:"..."` shapes.
+ */
+export function looksMinified(text: string): boolean {
+  let lineStart = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    if (text[i] === '\n') {
+      if (i - lineStart > MINIFIED_LINE_LENGTH) return true;
+      lineStart = i + 1;
+    }
+  }
+  return text.length - lineStart > MINIFIED_LINE_LENGTH;
+}
+
 export function looksBinary(sample: Uint8Array): boolean {
   const limit = Math.min(sample.length, 8192);
   for (let i = 0; i < limit; i += 1) {

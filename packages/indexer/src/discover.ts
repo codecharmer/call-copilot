@@ -37,7 +37,17 @@ export type SkippedFile = {
 export type DiscoveryResult = {
   readonly files: DiscoveredFile[];
   readonly skipped: SkippedFile[];
+  /**
+   * Set when the walk stopped at `maxFiles` with entries still unvisited.
+   *
+   * §6: "never silently describe an incomplete index as complete." A caller
+   * that ignores this field is describing an incomplete index as complete, so
+   * every consumer must surface it to the user.
+   */
+  readonly truncated?: { readonly limit: number; readonly message: string };
 };
+
+type WalkState = { truncated: boolean };
 
 export type DiscoveryOptions = {
   /** Files larger than this are skipped; huge files are almost never evidence. */
@@ -141,11 +151,25 @@ export async function discover(
 ): Promise<DiscoveryResult> {
   const files: DiscoveredFile[] = [];
   const skipped: SkippedFile[] = [];
+  const state: WalkState = { truncated: false };
 
-  await walk(root, '', [], files, skipped, options);
+  await walk(root, '', [], files, skipped, options, state);
 
   files.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
   skipped.sort((a, b) => (a.relativePath < b.relativePath ? -1 : 1));
+
+  if (state.truncated) {
+    return {
+      files,
+      skipped,
+      truncated: {
+        limit: options.maxFiles,
+        message:
+          `Stopped after ${options.maxFiles} files; the repository has more. ` +
+          'This index is incomplete. Narrow the root or raise the limit.',
+      },
+    };
+  }
   return { files, skipped };
 }
 
@@ -156,8 +180,12 @@ async function walk(
   files: DiscoveredFile[],
   skipped: SkippedFile[],
   options: DiscoveryOptions,
+  state: WalkState,
 ): Promise<void> {
-  if (files.length >= options.maxFiles) return;
+  if (files.length >= options.maxFiles) {
+    state.truncated = true;
+    return;
+  }
 
   const absoluteDir =
     relativeDir === '' ? root.absolute : join(root.absolute, ...relativeDir.split('/'));
@@ -170,6 +198,21 @@ async function walk(
       relativePath: relativeDir,
       reason: 'Directory could not be read.',
       origin: 'boundary',
+    });
+    return;
+  }
+
+  // A directory below the root that carries its own `.git` is a different
+  // repository: a nested clone, a submodule checkout, or a linked worktree
+  // (Claude Code keeps those under `.claude/worktrees/`). Indexing it here
+  // would count that code as part of this repository and, for worktrees,
+  // index the same files two or three times over. Every answer binds to one
+  // repository (CLAUDE.md), so it is pruned; the user indexes it separately.
+  if (relativeDir !== '' && entries.some((e) => e.name === '.git')) {
+    skipped.push({
+      relativePath: relativeDir,
+      reason: 'Nested repository with its own .git; register it separately.',
+      origin: 'default',
     });
     return;
   }
@@ -190,7 +233,10 @@ async function walk(
   const directories: string[] = [];
 
   for (const entry of entries) {
-    if (files.length >= options.maxFiles) return;
+    if (files.length >= options.maxFiles) {
+      state.truncated = true;
+      return;
+    }
 
     const relativePath = joinPosix(relativeDir, entry.name);
 
@@ -281,7 +327,7 @@ async function walk(
   }
 
   for (const dir of directories) {
-    await walk(root, dir, ignores, files, skipped, options);
+    await walk(root, dir, ignores, files, skipped, options, state);
   }
 }
 

@@ -27,6 +27,7 @@ import {
   discover,
   generationId,
   hashText,
+  looksMinified,
   readTextFile,
   redactSecrets,
   resolveRoot,
@@ -119,17 +120,22 @@ async function run(options: Options): Promise<number> {
   }
 
   const startedAt = performance.now();
-  const { files, skipped } = await discover(root);
+  const { files, skipped, truncated } = await discover(root);
   const discoveredAt = performance.now();
 
   const indexed: IndexedFile[] = [];
   const unreadable: DiscoveredFile[] = [];
+  const minified: DiscoveredFile[] = [];
   const secretHits: SecretHit[] = [];
 
   for (const file of files) {
     const raw = await readTextFile(file);
     if (raw === undefined) {
       unreadable.push(file);
+      continue;
+    }
+    if (looksMinified(raw)) {
+      minified.push(file);
       continue;
     }
 
@@ -184,10 +190,12 @@ async function run(options: Options): Promise<number> {
             chunk: round(chunkedAt - discoveredAt),
             total: round(elapsedMs),
           },
+          truncated: truncated ?? null,
           files: {
             indexed: indexed.length,
             skipped: skipped.length,
             unreadable: unreadable.length,
+            minified: minified.length,
           },
           chunks: { total: totalChunks, estimatedTokens: totalTokens },
           skippedByOrigin: bySkipOrigin,
@@ -203,6 +211,7 @@ async function run(options: Options): Promise<number> {
 
   printReport({
     root: root.absolute,
+    truncated,
     generation,
     elapsedMs,
     discoverMs: discoveredAt - startedAt,
@@ -210,6 +219,7 @@ async function run(options: Options): Promise<number> {
     indexed,
     skipped,
     unreadable,
+    minified,
     secretHits,
     bySkipOrigin,
     byLanguage,
@@ -240,6 +250,7 @@ function sortedEntries(counts: Record<string, number>): Array<[string, number]> 
 
 function printReport(input: {
   root: string;
+  truncated: { limit: number; message: string } | undefined;
   generation: string;
   elapsedMs: number;
   discoverMs: number;
@@ -247,6 +258,7 @@ function printReport(input: {
   indexed: IndexedFile[];
   skipped: SkippedFile[];
   unreadable: DiscoveredFile[];
+  minified: DiscoveredFile[];
   secretHits: SecretHit[];
   bySkipOrigin: Record<string, number>;
   byLanguage: Record<string, number>;
@@ -265,8 +277,16 @@ function printReport(input: {
       (input.unreadable.length > 0
         ? `, ${input.unreadable.length} looked binary despite their extension`
         : '') +
+      (input.minified.length > 0
+        ? `, ${input.minified.length} skipped as minified/generated content`
+        : '') +
       ` — in ${round(input.elapsedMs)} ms (discovery ${round(input.discoverMs)} ms, chunking ${round(input.chunkMs)} ms).`,
   );
+  if (input.truncated) {
+    console.log('');
+    console.log(`!! INCOMPLETE: ${input.truncated.message}`);
+    console.log('');
+  }
   console.log(`Chunks: ${input.totalChunks}  ·  Estimated tokens: ${input.totalTokens}`);
   console.log(`Generation ID: ${input.generation}`);
   console.log(

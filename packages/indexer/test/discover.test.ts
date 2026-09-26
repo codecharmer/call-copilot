@@ -301,3 +301,59 @@ describe('explicit dependency-source inclusion', () => {
     expect(paths).not.toContain('certs/server.key');
   });
 });
+
+describe('nested repositories and tool metadata', () => {
+  it('prunes a child directory that carries its own .git', async () => {
+    // A linked worktree or nested clone is a different repository. Indexing
+    // it here would attribute its code to this one and, for worktrees, index
+    // the same files several times over.
+    await write('.git/HEAD', 'ref: refs/heads/main');
+    await write('src/a.ts', 'export const a = 1;');
+    await write('.claude/worktrees/feature/.git', 'gitdir: ../../../.git/worktrees/feature');
+    await write('.claude/worktrees/feature/src/a.ts', 'export const a = 1;');
+    await write('nested-clone/.git/HEAD', 'ref: refs/heads/main');
+    await write('nested-clone/lib.ts', 'export const b = 2;');
+
+    const { files, skipped } = await discover(resolveRoot(dir));
+
+    expect(files.map((f) => f.relativePath)).toEqual(['src/a.ts']);
+    expect(skipped.find((s) => s.relativePath === 'nested-clone')?.reason).toContain(
+      'Nested repository',
+    );
+  });
+
+  it('does not prune the root even though it has a .git', async () => {
+    await write('.git/HEAD', 'ref: refs/heads/main');
+    await write('a.ts', 'export const a = 1;');
+    const { files } = await discover(resolveRoot(dir));
+    expect(files.map((f) => f.relativePath)).toEqual(['a.ts']);
+  });
+
+  it('excludes editor and agent tool metadata directories', async () => {
+    await write('.claude/settings.local.json', '{}');
+    await write('.idea/workspace.xml', '<x/>');
+    await write('src/a.ts', 'export const a = 1;');
+    const { files } = await discover(resolveRoot(dir));
+    expect(files.map((f) => f.relativePath)).toEqual(['src/a.ts']);
+  });
+});
+
+describe('truncation', () => {
+  const opts = { maxFileBytes: 1_000_000, maxFiles: 3, ignoreFileNames: ['.gitignore'] };
+
+  it('reports when the walk stopped at the file limit', async () => {
+    // §6: "never silently describe an incomplete index as complete."
+    for (let i = 0; i < 5; i += 1) await write(`f${i}.ts`, 'export const x = 1;');
+    const result = await discover(resolveRoot(dir), opts);
+    expect(result.files.length).toBe(3);
+    expect(result.truncated).toBeDefined();
+    expect(result.truncated?.limit).toBe(3);
+    expect(result.truncated?.message).toContain('incomplete');
+  });
+
+  it('does not report truncation when the repository fits', async () => {
+    for (let i = 0; i < 2; i += 1) await write(`f${i}.ts`, 'export const x = 1;');
+    const result = await discover(resolveRoot(dir), opts);
+    expect(result.truncated).toBeUndefined();
+  });
+});
